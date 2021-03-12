@@ -16,8 +16,10 @@ https://www.cisecurity.org/cis-benchmarks/
     a.- CIS_auditd_recommendation.xml - rules related with CIS recommendations.
     b.- audit_common_rules.xml -This file was modified from original wazuh audit rules to adapt to new decoder fields to be ECS (Elastick common schema) compliance.
     c.- Auditd_rules.xml - new rules based on auditd configurations not included in CIS recommendations.
+    
+5.- Also you can also include **Regular_linux_rules.xml** to /var/ossec/etc/rules in order to enable this rules based in regular linux log events that need no further configuration. 
      
-5.-  Reconfiguration of /var/ossec/etc/ossce.conf must be done excluding wazuh decoders for audit with parameter:
+6.-  Reconfiguration of /var/ossec/etc/ossce.conf must be done excluding wazuh decoders for audit with parameter:
 
  ```
   <decoder_exclude>ruleset/decoders/0040-auditd_decoders.xml</decoder_exclude>
