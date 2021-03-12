@@ -1,0 +1,9 @@
+
+#System Information Discovery, T1082
+#-----------------------------------
+
+-w /proc/version -p wa -k system_discovery
+#Debian based
+#-w /etc/lsb-release -p wa -k system_discovery
+#RedhatBased
+-w /etc/redhat-release -p wa -k system_discovery

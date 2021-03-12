@@ -1,0 +1,98 @@
+#Exclude not very interesting crypto_key messages
+#----------------------------------
+-a always,exclude -F msgtype=CRYPTO_KEY_USER
+
+#Exclude current working directory
+#----------------------------------
+-a always,exclude -F msgtype=CWD
+
+#Ensure changes to system administration scope (sudoers) is collected
+#-----------------------------------------------------------------------------
+
+-w /etc/sudoers -p wa -k scope 
+-w /etc/sudoers.d/ -p wa -k scope
+
+#Monitoring login/logout events
+#--------------------------------
+
+-w /var/log/faillog -p wa -k logins 
+-w /var/log/lastlog -p wa -k logins
+
+#Ensure events that modify date and time information are collected
+#---------------------------------
+
+-a always,exit -F arch=b64 -S adjtimex -S settimeofday -k time-change 
+-a always,exit -F arch=b32 -S adjtimex -S settimeofday -S stime -k time-change 
+-a always,exit -F arch=b64 -S clock_settime -k time-change 
+-a always,exit -F arch=b32 -S clock_settime -k time-change 
+-w /etc/localtime -p wa -k time-change
+
+#Ensure events that modify the system's Mandatory Access Controls are collected
+#----------------------------------
+
+-w /etc/selinux/ -p wa -k MAC-policy 
+-w /usr/share/selinux/ -p wa -k MAC-policy
+
+#Ensure events that modify the system's network environment are collected
+#-----------------------------------
+-a always,exit -F arch=b64 -S sethostname -S setdomainname -k system-locale 
+-a always,exit -F arch=b32 -S sethostname -S setdomainname -k system-locale 
+
+-w /etc/issue -p wa -k system-locale 
+-w /etc/issue.net -p wa -k system-locale 
+-w /etc/hosts -p wa -k system-locale 
+
+#RPM
+-w /etc/sysconfig/network -p wa -k system-locale
+#DEB
+#-w /etc/network -p wa -k system-locale
+
+#Ensure discretionary access control permission modification events are collected
+#Not collected is not a daemon event auid!=4294967295
+#--------------------------------------
+
+-a always,exit -F arch=b64 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod 
+-a always,exit -F arch=b32 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod 
+-a always,exit -F arch=b64 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod 
+-a always,exit -F arch=b32 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod 
+-a always,exit -F arch=b64 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod 
+-a always,exit -F arch=b32 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+
+#Ensure unsuccessful unauthorized file access attempts are collected
+#EACCES (permission denied to the file)
+#EPERM (some other permanent error associated with the specific system call)
+#Not collected is not a daemon event auid!=4294967295
+#-------------------------------------
+
+-a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access 
+-a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access 
+-a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access 
+-a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access
+
+#Ensure events that modify user/group information are collected
+#-------------------------------
+-w /etc/group -p wa -k identity 
+-w /etc/passwd -p wa -k identity 
+-w /etc/gshadow -p wa -k identity 
+-w /etc/shadow -p wa -k identity 
+-w /etc/security/opasswd -p wa -k identity
+
+#Ensure successful file system mounts are collected
+#---------------------------------------------------
+
+-a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts 
+-a always,exit -F arch=b32 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts
+
+
+#Ensure file deletion events by users are collected
+#----------------------------------------------------
+-a always,exit -F arch=b64 -S unlink -S unlinkat -S rename -S renameat -F auid>=1000 -F auid!=4294967295 -k delete 
+-a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -F auid>=1000 -F auid!=4294967295 -k delete
+
+#Ensure kernel module loading and unloading is collected
+#--------------------------------------------------------
+
+-w /sbin/insmod -p x -k modules 
+-w /sbin/rmmod -p x -k modules 
+-w /sbin/modprobe -p x -k modules 
+-a always,exit -F arch=b64 -S init_module -S delete_module -k modules
