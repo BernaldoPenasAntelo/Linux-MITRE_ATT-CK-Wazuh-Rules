@@ -5,7 +5,7 @@ This repository it's a set of configurations and rules for Wazuh in an attemp to
 https://www.cisecurity.org/cis-benchmarks/
 
 
-h1. USAGE
+### USAGE
 
 1.- Install Auditd and use **CIS_recomendations.rules** as the configuration file (/etc/audit/audit.rules)
 
