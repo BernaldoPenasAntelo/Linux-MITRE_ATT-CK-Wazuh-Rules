@@ -1,0 +1,31 @@
+<!--
+bash_history decoder
+
+For up to 5 flags plus command
+
+Mar 17 23:23:23 Test bash_history: history
+Mar 17 23:32:23 Test bash_history: cat wazuh.list
+Mar 17 23:23:23 Test bash_history: cp /tmp/test.txt /var/ossec/etc/test.txt
+Mar 17 23:23:23 Test bash_history: ls -lrt | grep 'manolo'
+Mar 17 23:23:23 Test bash_history: dd if=/dev/zero bs=1 count=1 >> /tmp
+-->
+
+<decoder name="bash_history">
+  <program_name>^bash_history</program_name>
+</decoder>
+
+<decoder name="bash_history_command">
+    <parent>bash_history</parent>
+    <regex>^(\w+)</regex>
+    <order>fields.command</order>
+</decoder>
+<decoder name="bash_history_command">
+    <parent>bash_history</parent>
+    <regex>\s(\S*)\s*(\S*)\s</regex>
+    <order>fields.flag_2,fields.flag_3</order>
+</decoder>
+<decoder name="bash_history_command">
+    <parent>bash_history</parent>
+    <regex>\s*(\S*)\s(\S*)$</regex>
+    <order>fields.flag_4,fields.flag_1</order>
+</decoder>
